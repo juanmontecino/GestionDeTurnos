@@ -9,7 +9,6 @@ import turnosRoutes from './routes/turnos.routes';
 
 const app = express();
 
-app.set('port', config.PORT);
 app.set('port', config.PORT || process.env.PORT || 3000);
 
 app.use(morgan('dev'));
