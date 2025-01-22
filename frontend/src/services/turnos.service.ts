@@ -3,19 +3,32 @@ import { apiClient } from './api.config';
 import { serviciosService } from './servicios.service'; // Suponiendo que tienes un servicio para servicio
 import { usuariosService } from './usuarios.service'; // Suponiendo que tienes un servicio para usuario
 
-
 class TurnosService {
   private readonly baseUrl = '/turnos';
 
-  // Modificar para obtener detalles de usuario y servicio
   async getAll() {
     try {
       const { data } = await apiClient.get<TurnosResponse>(this.baseUrl);
-      const turnosConDetalles = await Promise.all(data.turnos.map(async (turno) => {
-        const usuario = await usuariosService.getById(turno.usuario as string);
-        const servicio = await serviciosService.getById(turno.servicio as string);
-        return { ...turno, usuario, servicio };
-      }));
+      
+      const turnosConDetalles = await Promise.all(
+        data.turnos.map(async (turno) => {
+          // Solo hacer las peticiones si son strings
+          const usuarioData = typeof turno.usuario === 'string' 
+            ? await usuariosService.getById(turno.usuario)
+            : turno.usuario;
+            
+          const servicioData = typeof turno.servicio === 'string'
+            ? await serviciosService.getById(turno.servicio)
+            : turno.servicio;
+
+          return { 
+            ...turno, 
+            usuario: usuarioData, 
+            servicio: servicioData 
+          };
+        })
+      );
+
       return turnosConDetalles;
     } catch (error) {
       throw this.handleError(error, 'Error al obtener los turnos');

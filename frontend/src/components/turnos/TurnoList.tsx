@@ -1,24 +1,23 @@
-import { useState, useEffect } from 'react';
-import { 
-  Paper, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TableRow,
-  IconButton,
-  Chip,
-  Typography,
+import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
+import {
   Alert,
-  Snackbar
+  Chip,
+  IconButton,
+  Paper,
+  Snackbar,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow
 } from '@mui/material';
-import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Turno } from '../../types/turno.types';
+import { useEffect, useState } from 'react';
 import { turnosService } from '../../services/turnos.service';
 import { CustomApiError } from '../../types/error.types';
+import { Turno } from '../../types/turno.types';
 
 interface Props {
   onEdit: (turno: Turno) => void;
@@ -51,18 +50,21 @@ export const TurnoList = ({ onEdit }: Props) => {
   });
 
   const loadTurnos = async () => {
-    try {
-      setError(null); // Limpiar error previo
-      const data = await turnosService.getAll();
-      setTurnos(data);
-    } catch (err) {
-      console.error('Error loading turnos:', err);
-      const errorMessage = err instanceof CustomApiError 
-        ? err.message 
-        : 'Error al cargar los turnos. Por favor, intente nuevamente.';
-      setError(errorMessage);
-    }
-  };
+  try {
+    setError(null);
+    console.log('Iniciando petición de turnos...'); // Agregar este log
+    const data = await turnosService.getAll();
+    console.log('Respuesta de turnos:', data); // Agregar este log
+    setTurnos(data);
+  } catch (err) {
+    console.error('Error detallado:', err); // Modificar este log
+    const errorMessage = err instanceof CustomApiError 
+      ? err.message 
+      : 'Error al cargar los turnos. Por favor, intente nuevamente.';
+    setError(errorMessage);
+  }
+};
+  
 
   useEffect(() => {
     loadTurnos();
@@ -120,7 +122,7 @@ export const TurnoList = ({ onEdit }: Props) => {
           <TableBody>
             {turnos.map((turno) => (
               <TableRow key={turno._id}>
-                <TableCell>
+               <TableCell>
                   {typeof turno.usuario === 'string' 
                     ? turno.usuario 
                     : `${turno.usuario.nombre} ${turno.usuario.apellido}`}
