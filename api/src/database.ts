@@ -7,7 +7,7 @@ import config from "./routes/config";
         //    user : config.MONGO_USER,
         //    pass : config.MONGO_PASSWORD
         };
-        const db = await mongoose.connect(`mongodb://${config.MONGO_HOST}/${config.MONGO_DATABASE}`, mongooseOptions);
+        const db = await mongoose.connect(`${config.URL}`, mongooseOptions);
         console.log("Connected to MongoDB:", db.connection.name);
     } catch (error) {
         console.error(error);
